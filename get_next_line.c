@@ -5,78 +5,60 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dkaplan <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/05/31 15:21:15 by dkaplan           #+#    #+#             */
-/*   Updated: 2018/06/05 12:16:15 by dkaplan          ###   ########.fr       */
+/*   Created: 2018/06/05 16:31:09 by dkaplan           #+#    #+#             */
+/*   Updated: 2018/06/05 17:04:55 by dkaplan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft/libft.h"
 #include "get_next_line.h"
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdio.h>
 
-int		returnplace(char *str)
+static int    ft_read_buffer(int const fd, char **line)
 {
-	int i;
+    char    *buff;
+    int        ret;
+    //char    *tmp;
 
-	i = 0;
-	while (str[i] && str[i] != '\n')
-		i++;
-	return (i);
+    if (!(buff = (char *)malloc(sizeof(*buff)* (BUFF_SIZE + 1))))
+        return (-1);
+    ret = read(fd, buff, BUFF_SIZE);
+    if (ret > 0)
+    {
+        buff[ret] = '\0';
+        *line = ft_strjoin(*line, buff);
+        free(*line);
+        //*line = tmp;
+		free(buff);
+    }
+    return (ret);
 }
 
-int		get_next_line(int const fd, char **line)
+int            get_next_line(int const fd, char **line)
 {
-    static char *data;
-	int i;
-	char *temp;
+    static char    *str;
+    char        *find_newl;
+    int            ret;
 
-	if ((!(data = ft_strnew(BUFF_SIZE))) || (!(temp = ft_strnew(BUFF_SIZE))))
-		return (-1);
-	i = 0;
-	if (fd < 0 || !line || read(fd, data, 0) < 0)
-		return (-1);
-	/*read(fd, data, BUFF_SIZE);
-	data[BUFF_SIZE] = 0;
-	if (!(*line = ft_strdup(data)))
-		return (-1);
-	if (!(ft_strchr(data, '\n')))
-		read(fd, temp, BUFF_SIZE);
-	else if (ft_strcmp(ft_strchr(data, '\n'), "\n") == 0)
-	{
-		ft_strcpy(*line, data);
-		return (1);
-	}
-	while (!(ft_strchr(temp, '\n')))
-		read(fd, temp, BUFF_SIZE);
-	printf("line%s\n", line[0]);
-	//printf("temp%s\n", temp);
-	return (i);*/
-	read(fd, data, BUFF_SIZE);
-	while (data[i] != '\n' && data[i] != '\0')
-	{
-		if (!data)
-			return (0);
-		if (data[i] == '\n' || data[i] == '\0')
-		{
-			ft_strcat(data, temp);
-			if (!(*line = ft_strdup(data)))
-			{
-				free(data);
-				return (-1);
-			}
-			free(data);
-			return (1);
-		}
-		if (i == ft_strlen(data))
-		{
-			if (!(*line = ft_strdup(data)))
-				return (-1);
-			read(fd, data, BUFF_SIZE);
-			ft_strcat(data, temp);
-		}
-		i++;
-	}
-	return(1);
-	free(data);
+    if ((!str && (!(str = (char *)malloc(sizeof(char))))) 
+			|| fd < 0 || BUFF_SIZE < 0)
+        return (-1);
+    find_newl = ft_strchr(str, '\n');
+    while (find_newl == NULL)
+    {
+        ret = ft_read_buffer(fd, &str);
+        if (ret == 0)
+        {
+            if (ft_strlen(str) == 0)
+                return (0);
+           // str = ft_strjoin(str, "X");
+        }
+        if (ret < 0)
+            return (-1);
+        else
+            find_newl = ft_strchr(str, '\n');
+    }
+    *line = ft_strsub(str, 0, ft_strlen(str) - ft_strlen(find_newl));
+    str = ft_strdup(find_newl + 1);
+    return (1);
 }
