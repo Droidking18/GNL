@@ -6,7 +6,7 @@
 /*   By: dkaplan <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/05 16:31:09 by dkaplan           #+#    #+#             */
-/*   Updated: 2018/06/07 15:27:49 by dkaplan          ###   ########.fr       */
+/*   Updated: 2018/06/07 15:32:55 by dkaplan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int					get_next_line(int const fd, char **line)
 		{																		// {
 			if (!ft_strlen(str))												// if str == no chars
 				return (0);														// return 0, because we're done reading
-			ft_strcat(str, "\n");												// else str = str+\n   !!!!WHY?!!!!
+			ft_strcat(str, "\n");												// else str = str+\n so it will copy nothing on line 64
 		}																		// } 
 		if (ret < 0)															// if (ret is -1).. i.e read failed
 			return (-1);														// then theres an error
