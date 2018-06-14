@@ -6,13 +6,12 @@
 /*   By: dkaplan <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/05 16:31:09 by dkaplan           #+#    #+#             */
-/*   Updated: 2018/06/07 17:16:44 by dkaplan          ###   ########.fr       */
+/*   Updated: 2018/06/14 12:56:45 by dkaplan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/libft.h"
 #include "get_next_line.h"
-#include <stdio.h>
 
 static int			ft_read_buffer(int const fd, char **line)
 {
@@ -43,19 +42,17 @@ int					get_next_line(int const fd, char **line)
 	char			*strn;
 	int				ret;
 
-	if ((!str && (!(str = (char*)malloc(sizeof(char) * BUFF_SIZE + 1)))) 
-			|| fd < 0 || BUFF_SIZE < 0)
+	if ((!str && (!(str = (char*)malloc(sizeof(char) * BUFF_SIZE + 1))))
+			|| fd < 0 || BUFF_SIZE <= 0)
 		return (-1);
 	strn = ft_strchr(str, '\n');
 	while (!strn)
 	{
 		ret = ft_read_buffer(fd, &str);
+		if (ret == 0 && !ft_strlen(str))
+			return (0);
 		if (ret == 0)
-		{
-			if (!ft_strlen(str))
-				return (0);
 			ft_strcat(str, "\n");
-		}
 		if (ret < 0)
 			return (-1);
 		else
